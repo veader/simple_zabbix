@@ -1,0 +1,22 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ansi (1.4.3)
+    json (1.7.7)
+    metaclass (0.0.1)
+    minitest (4.7.0)
+    mocha (0.13.3)
+      metaclass (~> 0.0.1)
+    rake (10.0.4)
+    turn (0.9.6)
+      ansi
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  json
+  minitest
+  mocha
+  rake
+  turn
