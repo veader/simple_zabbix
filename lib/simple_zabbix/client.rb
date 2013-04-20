@@ -19,13 +19,11 @@ class SimpleZabbix
     def authenticate(username, password)
       results, errors = \
         query_api('user.authenticate', user: username, password: password)
-      if errors
-        self.last_error = errors
-        false
-      else
-        self.auth_hash = results
-        true
-      end
+
+      self.last_error = errors
+      self.auth_hash  = results
+
+      errors.nil? # only successful without errors
     end
 
     def url=(the_url)

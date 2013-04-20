@@ -16,6 +16,7 @@ describe SimpleZabbix::Client do
 
     client.authenticate('wrong', 'creds').must_equal false
     client.last_error.wont_be_nil
+    client.auth_hash.must_be_nil
   end
 
   it 'should authenticate with correct credentials' do
@@ -28,6 +29,7 @@ describe SimpleZabbix::Client do
 
     client.authenticate('right', 'creds').must_equal true
     client.last_error.must_be_nil
+    client.auth_hash.wont_be_nil
   end
 
   it 'should add http to url without one' do
