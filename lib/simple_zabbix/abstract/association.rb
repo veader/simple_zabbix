@@ -46,13 +46,17 @@ class SimpleZabbix
       end if error.nil?
     end
 
-    # TODO: method missing for enumerable methods and call where w/o no params?
-    def all
-      where
-    end
-
-    def first
-      where.first
+    def method_missing(method, *args, &block)
+      # look for method in Array/Enumerable
+      if Array.instance_methods.include?(method.to_sym)
+        # if we're looking at an array/enumerable method, call method on
+        #     the where results...
+        where.send(method, *args, &block)
+      elsif method.to_s == 'all'
+        where
+      else
+        super # a MUST
+      end
     end
 
   protected
