@@ -5,9 +5,9 @@ class SimpleZabbix
   class Client
     attr_accessor :auth_hash, :url, :debug_mode, :last_error
 
-    def initialize(url=nil,username=nil,password=nil)
+    def initialize(url=nil, username=nil, password=nil)
       self.debug_mode = false
-      self.url = url unless url.nil?
+      self.url = url
       authenticate(username, password) unless username.nil? || password.nil?
     end
 
@@ -28,12 +28,16 @@ class SimpleZabbix
 
     def url=(the_url)
       @url = the_url
-      # make sure it is a complete url with proper path
-      @url = 'http://' + @url unless @url.match(/^http[s]*\:\/\//)
-      unless @url.match(/jsonrpc/)
-        @url += '/' unless @url.match(/\/$/)
-        @url += 'api_jsonrpc.php'
+      unless @url.nil?
+        # make sure it is a complete url with proper path
+        @url = 'http://' + @url unless @url.match(/^http[s]*\:\/\//)
+        unless @url.match(/jsonrpc/)
+          @url += '/' unless @url.match(/\/$/)
+          @url += 'api_jsonrpc.php'
+        end
       end
+
+      @url
     end
 
     def api_version
@@ -47,12 +51,20 @@ class SimpleZabbix
       parse_json_response(json_response, json_request)
     end
 
+    def hosts
+      @_hosts ||= HostAssociation.new(self)
+    end
+
+    def items
+      @_items ||= ItemAssociation.new(self)
+    end
+
   protected # ---------------------------------------------------------------
     def make_http_request(json_request)
-      uri = URI.parse(self.url)
-
+      uri  = URI.parse(self.url)
       http = Net::HTTP.new(uri.host, uri.port)
-      if uri.port == 443
+
+      if uri.port == 443 # handle HTTPS
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
@@ -62,7 +74,7 @@ class SimpleZabbix
       request.body = json_request
       response = http.request(request)
 
-      raise "HTTP Error: #{response.code} on #{self.url}" if response.code != '200'
+      raise "HTTP Error: #{response.code}" if response.code != '200'
 
       puts response.body if self.debug_mode
       response.body
@@ -76,6 +88,7 @@ class SimpleZabbix
         id:      rand(100000),
         jsonrpc: '2.0',
       }
+      puts message if self.debug_mode
       JSON.generate(message)
     end
 
