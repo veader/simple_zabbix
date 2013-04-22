@@ -39,11 +39,15 @@ class SimpleZabbix
       results, error = self.client.query_api(api_method, params)
       # TODO: handle error
 
-      results.collect do |o|
-        obj = derived_class.new(o)
-        obj.client = self.client
-        obj
-      end if error.nil?
+      if error.nil?
+        results.collect do |o|
+          obj = derived_class.new(o)
+          obj.client = self.client
+          obj
+        end
+      else
+        nil
+      end
     end
 
     def method_missing(method, *args, &block)

@@ -55,9 +55,10 @@ class SimpleZabbix
       @_hosts ||= HostAssociation.new(self)
     end
 
-    def items
-      @_items ||= ItemAssociation.new(self)
-    end
+    # API really doesn't like a blank "all items" request
+    # def items
+    #   @_items ||= ItemAssociation.new(self)
+    # end
 
   protected # ---------------------------------------------------------------
     def make_http_request(json_request)
@@ -74,7 +75,10 @@ class SimpleZabbix
       request.body = json_request
       response = http.request(request)
 
-      raise "HTTP Error: #{response.code}" if response.code != '200'
+      if response.code != '200'
+        puts "[#{response.code}] #{response.body}" if self.debug_mode
+        raise "HTTP Error: #{response.code}"
+      end
 
       puts response.body if self.debug_mode
       response.body
