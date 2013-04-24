@@ -14,7 +14,7 @@ class SimpleZabbix
 
     def derived_class; nil; end         # eg: Host
 
-    def search_key_mappings; nil; end   # eg: { name: 'host' }
+    def translated_key_mappings; nil; end   # eg: { name: 'host' }
     # -----------------------------------------------------------------------
 
 
@@ -32,9 +32,9 @@ class SimpleZabbix
       if filters.empty?
         params = { filter: filter_params.merge(self.parent_params || {}) }
       else
-        valid_filter_params = validate_filters(filters) || {}
-        valid_filter_params.merge!(self.parent_params || {})
-        params = { filter: filter_params.merge(valid_filter_params) }
+        translated_filter_params = translate_filters(filters) || {}
+        translated_filter_params.merge!(self.parent_params || {})
+        params = { filter: filter_params.merge(translated_filter_params) }
       end
       params ||= {}
       params.merge!(output: 'extend')
@@ -73,17 +73,18 @@ class SimpleZabbix
     end
 
   protected
-    def validate_filters(filters)
-      valid = {}
+    def translate_filters(filters)
+      translated = {}
       filters.each do |key, value|
-        if (search_key_mappings || {}).keys.include?(key.to_sym)
-          valid[search_key_mappings[key.to_sym]] = value
+        if (translated_key_mappings || {}).keys.include?(key.to_sym)
+          translated[translated_key_mappings[key.to_sym]] = value
         else
-          puts "Unknown filter parameter #{key}. Skipping..."
+          # if key not found in translation table, use "as is"
+          translated[key] = value
         end
       end
 
-      valid
+      translated
     end
 
     def execute_query

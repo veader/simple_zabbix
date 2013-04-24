@@ -5,11 +5,10 @@ describe SimpleZabbix::Association do
     name = 'foo'
     assoc = SimpleZabbix::Association.new(nil)
     assoc.stubs(:default_search_param).returns(:name)
-    assoc.stubs(:search_key_mappings).returns(name: 'name')
     assoc.expects(:execute_query).returns([])
 
     assoc.find(name)
-    assoc.built_up_params[:filter].must_equal('name' => name)
+    assoc.built_up_params[:filter].must_equal(name: name)
   end
 
   it 'should map any array/enumerable method to results of where' do
@@ -30,13 +29,19 @@ describe SimpleZabbix::Association do
     assoc.all.must_equal(where_results)
   end
 
+  it 'should translate defined filter parameters' do
+    assoc = SimpleZabbix::Association.new(nil)
+    assoc.stubs(:translated_key_mappings).returns(name: 'monkey')
+    assoc.where(name: 'foo')
+    assoc.built_up_params[:filter].must_equal('monkey' => 'foo')
+  end
+
   it 'should chain where calls to combine filters' do
     assoc = SimpleZabbix::Association.new(nil)
-    assoc.stubs(:search_key_mappings).returns(name: 'name', host: 'host')
     assoc.where(name: 'foo')
     assoc.where(host: 'bar')
     assoc.built_up_params[:filter]. \
-          must_equal('name' => 'foo', 'host' => 'bar')
+          must_equal(name: 'foo', host: 'bar')
   end
 
   it 'should allow limiting of api output' do

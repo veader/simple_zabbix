@@ -12,11 +12,8 @@ class SimpleZabbix
       Item
     end
 
-    def search_key_mappings
-      { name: 'host',
-        host: 'host',
-        units: 'units',
-        delta: 'delta', }
+    def translated_key_mappings
+      { name: 'host' }
     end
   end
 
