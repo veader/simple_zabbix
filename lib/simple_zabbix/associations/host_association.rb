@@ -13,7 +13,9 @@ class SimpleZabbix
     end
 
     def search_key_mappings
-      { name: 'host' }
+      { name: 'host',
+        host: 'host',
+        hostid: 'hostid', }
     end
   end
 

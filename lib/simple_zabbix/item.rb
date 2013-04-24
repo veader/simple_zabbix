@@ -1,4 +1,4 @@
 class SimpleZabbix
   class Item < Base
-  end
-end
+  end # Item
+end # SimpleZabbix
