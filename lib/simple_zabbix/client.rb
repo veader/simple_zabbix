@@ -55,6 +55,11 @@ class SimpleZabbix
       @_hosts ||= HostAssociation.new(self)
     end
 
+    def host_groups
+      @_host_gruops ||= HostGroupAssociation.new(self)
+    end
+
+
     # API really doesn't like a blank "all items" request
     # def items
     #   @_items ||= ItemAssociation.new(self)
