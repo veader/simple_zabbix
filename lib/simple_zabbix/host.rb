@@ -4,7 +4,7 @@ class SimpleZabbix
       @_items ||= \
         begin
           assoc = ItemAssociation.new(self.client)
-          assoc.parent_params = { host: self.host }
+          assoc.parent_params = { hostids: self.hostid }
           assoc
         end
     end

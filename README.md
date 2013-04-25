@@ -8,7 +8,7 @@ A lot of it is modeled after [Arel](https://github.com/rails/arel) syntax.
 
 -----------------------------------------------------------------------------
 
-Interact with the  API directly via the `query_api` on the client object.
+Interact with the  API directly via `query_api` on the client object.
 Alternatively, interact with the "friendlier" convenience methods.
 
 ```ruby
@@ -17,15 +17,15 @@ client = SimpleZabbix.client
 client.url = 'https://zabbix.domain.com'
 client.authenticate('username', 'ultra-secure-password')
 
-# Get all Hosts
+# Get all hosts
 client.query_api('host.get', output: 'extend') # raw call
 client.hosts
 
-# Get specific Host
+# Get specific host
 client.query_api('host.get', output: 'extend', filter: { name: 'www' })
 client.hosts.find('www')
 
-# Get items for a Host
+# Get items for a host
 client.query_api('item.get', output: 'extend', filter: { host: 'ftp'})
 client.hosts.find('ftp').items
 

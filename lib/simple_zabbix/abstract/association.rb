@@ -17,6 +17,12 @@ class SimpleZabbix
     def translated_key_mappings; nil; end   # eg: { name: 'host' }
     # -----------------------------------------------------------------------
 
+    def built_up_params
+      @built_up_params ||= {}
+      @built_up_params.merge!(self.parent_params || {}) if @built_up_params.empty?
+      @built_up_params
+    end
+
 
     # returns a single item
     def find(value)
@@ -29,11 +35,8 @@ class SimpleZabbix
       self.built_up_params ||= {}
       filter_params = self.built_up_params[:filter] || {}
 
-      if filters.empty?
-        params = { filter: filter_params.merge(self.parent_params || {}) }
-      else
+      if !filters.empty?
         translated_filter_params = translate_filters(filters) || {}
-        translated_filter_params.merge!(self.parent_params || {})
         params = { filter: filter_params.merge(translated_filter_params) }
       end
       params ||= {}
