@@ -14,7 +14,7 @@ class SimpleZabbix
 
     def derived_class; nil; end         # eg: Host
 
-    def translated_key_mappings; nil; end   # eg: { name: 'host' }
+    def translated_key_mappings; {}; end   # eg: { name: 'host' }
     # -----------------------------------------------------------------------
 
     def built_up_params
