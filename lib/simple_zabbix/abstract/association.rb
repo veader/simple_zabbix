@@ -1,21 +1,51 @@
 class SimpleZabbix
   class Association
-    attr_accessor :client, :parent_params, :built_up_params
+    attr_accessor :client, :parent_params, :built_up_params, :derived_class
 
-    def initialize(client)
+    def initialize(client, assoc_name, parent_params={})
       self.client = client
+
+      # remove "s". eg: hosts => host
+      singular_assoc_name = \
+        assoc_name.to_s.gsub(/s$/,'').split('_').collect(&:capitalize).join
+      self.derived_class  = \
+        SimpleZabbix.const_get(singular_assoc_name)
+      self.parent_params = parent_params
     end
 
     # -----------------------------------------------------------------------
-    # REQUIRED OVERRIDES
-    def api_method; nil; end            # proper API method. eg: 'host.get'
 
-    def default_search_param; nil; end  # eg: 'host'
+    # API method should be derived from the class name. eg: Host => "host.get"
+    def api_method
+      @_api_method ||= "#{method_from_class_name}.get"
+    end
 
-    def derived_class; nil; end         # eg: Host
+    def method_from_class_name # eg: Host => "host"
+      @_method_from_class_name ||= \
+        begin
+          pieces = []
+          str = self.derived_class.name.split(":").last
+          while m = str.match(/[A-Z][a-z0-9]*/)
+            pieces << m.to_s.downcase
+            str = m.post_match
+          end
 
-    def translated_key_mappings; {}; end   # eg: { name: 'host' }
-    # -----------------------------------------------------------------------
+          pieces.join
+        end
+    end
+
+    def default_search_param # eg: Host => "host"
+      @_default_search_param ||= \
+        begin
+          class_name = self.derived_class.name.split(":").last
+          "#{class_name.downcase}"
+        end
+    end
+
+    def translated_key_mappings
+      return {} if !self.derived_class.respond_to?(:translated_key_mappings)
+      self.derived_class.translated_key_mappings
+    end
 
     def built_up_params
       @built_up_params ||= {}
@@ -23,10 +53,15 @@ class SimpleZabbix
       @built_up_params
     end
 
-
     # returns a single item
     def find(value)
-      key = default_search_param
+      key = \
+        if value.to_s =~ /^[0-9\.]*$/
+          default_search_param + "id"
+        else
+          default_search_param
+        end
+
       where(key => value).first
     end
 

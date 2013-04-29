@@ -1,5 +1,6 @@
 class SimpleZabbix
   class Base
+    extend Associations
     attr_accessor :attributes, :client
 
     def initialize(attributes={})

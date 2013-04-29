@@ -1,21 +1,10 @@
 class SimpleZabbix
   class Host < Base
-    def items
-      @_items ||= \
-        begin
-          assoc = ItemAssociation.new(self.client)
-          assoc.parent_params = { hostids: self.hostid }
-          assoc
-        end
-    end
+    has_many :items, { hostids: :hostid }
+    has_many :host_groups, { hostids: :hostid }
 
-    def host_groups
-      @_host_groups ||= \
-        begin
-          assoc = HostGroupAssociation.new(self.client)
-          assoc.parent_params = { hostids: self.hostid }
-          assoc
-        end
+    def self.translated_key_mappings # for associations
+      { name: 'host' }
     end
 
   end # Host

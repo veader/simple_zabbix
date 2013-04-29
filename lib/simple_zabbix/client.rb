@@ -3,7 +3,10 @@ require 'net/http'
 
 class SimpleZabbix
   class Client
+    extend Associations
     attr_accessor :auth_hash, :url, :debug_mode, :last_error
+    has_many :hosts
+    has_many :host_groups
 
     def initialize(url=nil, username=nil, password=nil)
       self.debug_mode = false
@@ -51,19 +54,9 @@ class SimpleZabbix
       parse_json_response(json_response, json_request)
     end
 
-    def hosts
-      @_hosts ||= HostAssociation.new(self)
+    def client # silliness for Associations module to work it's magic
+      self
     end
-
-    def host_groups
-      @_host_gruops ||= HostGroupAssociation.new(self)
-    end
-
-
-    # API really doesn't like a blank "all items" request
-    # def items
-    #   @_items ||= ItemAssociation.new(self)
-    # end
 
   protected # ---------------------------------------------------------------
     def make_http_request(json_request)
