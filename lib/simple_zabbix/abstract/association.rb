@@ -37,7 +37,7 @@ class SimpleZabbix
     def default_search_param # eg: Host => "host"
       @_default_search_param ||= \
         begin
-          class_name = self.derived_class.name.split(":").last
+          class_name = self.derived_class.name.split(':').last
           "#{class_name.downcase}"
         end
     end
