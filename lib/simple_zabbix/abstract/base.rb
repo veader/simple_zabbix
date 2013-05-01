@@ -7,6 +7,18 @@ class SimpleZabbix
       self.attributes = attributes
     end
 
+    def id
+      @_id ||= self.attributes["#{simple_name}id"]
+    end
+
+    def simple_name
+      self.class.name.split(':').last.match(/[A-Z][a-z]*$/).to_s.downcase
+    end
+
+    def camelize(str)
+      str.to_s.split('_').map { |p| p.capitalize }.join
+    end
+
     def method_missing(method, *args, &block)
       question_regex = /\?$/
       mc = camelize(method)
@@ -22,18 +34,6 @@ class SimpleZabbix
       else
         super # a MUST
       end
-    end
-
-    def id
-      @_id ||= self.attributes["#{simple_name}id"]
-    end
-
-    def simple_name
-      self.class.name.split(':').last.match(/[A-Z][a-z]*$/).to_s.downcase
-    end
-
-    def camelize(str)
-      str.to_s.split('_').map { |p| p.capitalize }.join
     end
 
   end # Base
