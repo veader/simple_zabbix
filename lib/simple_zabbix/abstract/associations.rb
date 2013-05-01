@@ -6,9 +6,9 @@ class SimpleZabbix
         instance_variable_get("@_#{assoc}") ||
         instance_variable_set("@_#{assoc}",
           begin
-            params = parent_params
-            params.map { |k,v| params[k] = self.attributes[v.to_s] }
-            Association.new(self.client, assoc, params)
+            params = parent_params.dup
+            params.map { |k,v| params[k] = attributes[v.to_s] }
+            Association.new(client, assoc, params)
           end
         )
       end
