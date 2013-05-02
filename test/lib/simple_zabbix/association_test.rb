@@ -7,7 +7,7 @@ describe SimpleZabbix::Association do
     assoc.expects(:execute_query).returns([])
 
     assoc.find(name)
-    assoc.built_up_params[:filter].must_equal('host' => name)
+    assoc.built_up_params[:search].must_equal('host' => name)
   end
 
   it 'should map any array/enumerable method to results of where' do
@@ -33,7 +33,7 @@ describe SimpleZabbix::Association do
     assoc = SimpleZabbix::Association.new(nil, :hosts)
     assoc.stubs(:translated_key_mappings).returns(name: 'monkey')
     assoc.where(name: name)
-    assoc.built_up_params[:filter].must_equal('monkey' => name)
+    assoc.built_up_params[:search].must_equal('monkey' => name)
   end
 
   it 'should chain where calls to combine filters' do
@@ -41,7 +41,7 @@ describe SimpleZabbix::Association do
     assoc.stubs(:translated_key_mappings).returns({})
     assoc.where(name: 'foo')
     assoc.where(host: 'bar')
-    assoc.built_up_params[:filter]. \
+    assoc.built_up_params[:search]. \
           must_equal(name: 'foo', host: 'bar')
   end
 

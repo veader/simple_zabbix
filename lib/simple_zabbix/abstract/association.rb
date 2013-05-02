@@ -65,17 +65,16 @@ class SimpleZabbix
       where(key => value).first
     end
 
-    # returns a collection
-    def where(filters={})
+    def where(new_params={})
       self.built_up_params ||= {}
-      filter_params = self.built_up_params[:filter] || {}
+      search_params = self.built_up_params[:search] || {}
 
-      if !filters.empty?
-        translated_filter_params = translate_filters(filters) || {}
-        params = { filter: filter_params.merge(translated_filter_params) }
+      if !new_params.empty?
+        translated_search_params = translate_keys(new_params) || {}
+        params = { search: search_params.merge(translated_search_params) }
       end
       params ||= {}
-      params.merge!(output: 'extend')
+      params = params.merge(output: 'extend')
 
       self.built_up_params.merge!(params)
 
@@ -111,7 +110,7 @@ class SimpleZabbix
     end
 
   protected
-    def translate_filters(filters)
+    def translate_keys(filters)
       translated = {}
       filters.each do |key, value|
         if (translated_key_mappings || {}).keys.include?(key.to_sym)
