@@ -67,15 +67,30 @@ class SimpleZabbix
 
     def where(new_params={})
       self.built_up_params ||= {}
+      filter_params = self.built_up_params[:filter] || {}
+
+      if !new_params.empty?
+        translated_filter_params = translate_keys(new_params) || {}
+        params = { filter: filter_params.merge(translated_filter_params) }
+      end
+      params ||= {}
+      params = params.merge(output: 'extend')
+
+      self.built_up_params.merge!(params)
+
+      self # return ourself so we can chain these calls...
+    end
+
+    def search(new_params={})
+      self.built_up_params ||= {}
       search_params = self.built_up_params[:search] || {}
 
       if !new_params.empty?
         translated_search_params = translate_keys(new_params) || {}
         params = { search: search_params.merge(translated_search_params) }
       end
-      params ||= {}
-      params = params.merge(output: 'extend')
 
+      params ||= {}
       self.built_up_params.merge!(params)
 
       self # return ourself so we can chain these calls...
